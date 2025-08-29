@@ -5,7 +5,8 @@ from sqlalchemy import create_engine
 
 from dotenv import load_dotenv
 
-from utils.clean_data_functions import _clean_campus
+from utils.clean_data_functions import normalize_text, initials_from_name
+from constants.states import brazilian_states
 
 load_dotenv()
 
@@ -52,13 +53,39 @@ df.columns = columns
 
 # df["campus"] = df["campus"].str.replace(r"[^a-zA-Z0-9\s]", "", regex=True)
 
-df["campus"] = df["campus"].apply(_clean_campus)
-df["unit"] = df["unit"].apply(_clean_campus)
-df["city"] = df["city"].apply(_clean_campus)
+df["campus"] = df["campus"].apply(normalize_text)
+df["unit"] = df["unit"].apply(normalize_text)
+df["city"] = df["city"].apply(normalize_text)
+df["state"] = df["state"].apply(normalize_text)
 
-df_without_null = df.dropna()
+# Normalized mapping (so both keys and incoming values are compared normalized)
+normalized_map = { normalize_text(k): v for k, v in brazilian_states.items() }
 
-print(df_without_null)
+for v in brazilian_states.values():
+    normalized_map[normalize_text(v)] = v
+
+df_without_null = df.dropna(axis=0).copy()
+
+states = df_without_null["state"].str.upper().str.strip()
+
+uf = states.map(normalized_map)
+
+# Applying fallback only wher mapping is NaN
+fallback = states[uf.isna()].apply(initials_from_name)
+
+# write fallback values into uf
+uf = uf.fillna(fallback)
+
+df_without_null["state"] = uf
+
+# df_without_null["state"] = uf
+
+print(df_without_null["state"])
+
+# print("-------------- ISNULL")
+# print(df_without_null.isnull().sum())
+# print("-------------- ISNA")
+# print(df_without_null.isna().sum())
 
 # Inserting the DF data into an SQL table
 table_name = "students_cleaned"

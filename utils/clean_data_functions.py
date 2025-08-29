@@ -13,7 +13,8 @@ def _normalize_mojibake(text: str) -> str:
         except (UnicodeEncodeError, UnicodeDecodeError):
             return text
         
-def _clean_campus(value):
+# Normalizer: strip, uppercase, remove accents or punctuation
+def normalize_text(value):
     if pd.isna(value):
         return value
     s = str(value)
@@ -22,6 +23,32 @@ def _clean_campus(value):
     s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("ascii")
     # Remove commas
     s = s.replace(",", "")
+    
+    # replace non letters / numbers with single space
+    s = re.sub(r'[^A-Z0-9\s]', '', s)
+    
     # Normalize whitespace
     s = re.sub(r"\s+", " ", s).strip()
     return s
+
+STOPWORDS = {'DE','DO','DA','DOS','DAS','E'}
+
+def initials_from_name(norm_name):
+    if norm_name:
+        return None
+    parts = [p for p in norm_name.split() if p and p not in STOPWORDS]
+    
+    if len(parts) == 0:
+        return None
+    
+    if len(parts) == 1:
+        word = parts[0]
+        # if it's already 2 letters (maybe used typed "MG") return as-is
+        if len(word) == 2:
+            return word
+        
+        # Otherwise take first two letters as a reasonable guess
+        return word[:2]
+    
+    # Take first letter of first signifcant word + first lettter of last sig
+    return (parts[0][0] + parts[-1][0]).upper()
