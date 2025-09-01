@@ -7,24 +7,28 @@ from dotenv import load_dotenv
 
 from utils.clean_data_functions import normalize_text, initials_from_name
 from constants.states import brazilian_states
+from utils.db_connection import get_connection
+from utils.pandas_func import set_columns
 
 load_dotenv()
 
-try:
+# try:
     
-    conn = psycopg2.connect(
-        database="testqueries",
-        user="postgres",
-        password=os.getenv("POSTGRES_PASSWORD"),
-        host="localhost",  # e.g., 'localhost' or an IP address
-        port="5432"   
-    )
+#     conn = psycopg2.connect(
+#         database="testqueries",
+#         user="postgres",
+#         password=os.getenv("POSTGRES_PASSWORD"),
+#         host="localhost",  # e.g., 'localhost' or an IP address
+#         port="5432"   
+#     )
     
-    db_connection_str = f'postgresql+psycopg2://postgres:{os.getenv("POSTGRES_PASSWORD")}@localhost:5432/testqueries'
+#     db_connection_str = f'postgresql+psycopg2://postgres:{os.getenv("POSTGRES_PASSWORD")}@localhost:5432/testqueries'
     
-    engine = create_engine(db_connection_str)
-except psycopg2.OperationalError as err:
-    print(f"Error conecting to the database: {err}")
+#     engine = create_engine(db_connection_str)
+# except psycopg2.OperationalError as err:
+#     print(f"Error conecting to the database: {err}")
+
+conn, engine = get_connection()
 
 cursor = conn.cursor()
 
@@ -49,7 +53,7 @@ print(df.info())
 
 columns = ["campus", "unit", "course", "state", "city", "students_quantity"]
 
-df.columns = columns
+df = set_columns(columns, df)
 
 # df["campus"] = df["campus"].str.replace(r"[^a-zA-Z0-9\s]", "", regex=True)
 
