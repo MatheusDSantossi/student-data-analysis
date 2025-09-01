@@ -23,8 +23,8 @@ FROM 'C:\\Users\\Admin\\Downloads\\alunos-por-cidade-de-origem.csv'
 WITH (FORMAT csv, DELIMITER ',', HEADER true, ENCODING 'WIN1252');
 
 SELECT * FROM students
-WHERE cidade_origem ILIKE '%uber%'
 WHERE LENGTH(estado_origem) > 2	
+WHERE cidade_origem ILIKE '%uber%'
 
 show port
 
