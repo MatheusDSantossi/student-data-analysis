@@ -46,19 +46,40 @@ print(students_by_state.to_list())
 # plt.tight_layout()
 # plt.show()
 
-# print(df)
+print(df)
 
+print("Quantity of students by Course")
+print("-------------------------------")
 course_quantity_students = df.groupby("course")["students_quantity"].sum()
 
-print(course_quantity_students.sort_values(ascending=False))
+# print(course_quantity_students.sort_values(ascending=False))
 
-print("list: ", course_quantity_students.to_list())
-print("values: ", course_quantity_students.values)
+# print("list: ", course_quantity_students.to_list())
+# print("values: ", course_quantity_students.values)
 
-plt.plot()
-plt.xlabel(course_quantity_students.index.astype(str).drop_duplicates())
-plt.ylabel(course_quantity_students.values)
-plt.show()
+# plt.plot()
+# plt.xlabel(course_quantity_students.index.astype(str).drop_duplicates())
+# plt.ylabel(course_quantity_students.values)
+# plt.show()
+
+print("Quantity of students by State")
+print("-------------------------------")
+
+students_quantity_by_state = df.groupby("state")["students_quantity"].sum()
+
+# students_quantity_by_state.plot(kind="bar", figsize=(10, 6))
+# plt.bar(x=students_quantity_by_state.index.astype("str"), height=students_quantity_by_state.values)
+# plt.xlabel("State")
+# plt.ylabel("Students Quantity")
+# plt.title("Students by State")
+# plt.show()
+
+students_quantity_by_city = df.groupby("city")["students_quantity"].sum()
+
+students_quantity_by_city.plot(kind="bar", figsize=(10, 6))
+plt.xlabel("City")
+plt.ylabel("Students")
+plt.title("Students")
 
 cursor.close()
 conn.close()
