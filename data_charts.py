@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from utils.pandas_func import set_columns
+from utils.pandas_func import set_columns, create_top_cities_chart
 
 from utils.db_connection import get_connection
 
@@ -76,10 +76,7 @@ students_quantity_by_state = df.groupby("state")["students_quantity"].sum()
 
 students_quantity_by_city = df.groupby("city")["students_quantity"].sum()
 
-students_quantity_by_city.plot(kind="bar", figsize=(10, 6))
-plt.xlabel("City")
-plt.ylabel("Students")
-plt.title("Students")
+create_top_cities_chart(students_quantity_by_city)
 
 cursor.close()
 conn.close()
